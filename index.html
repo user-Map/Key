@@ -3,62 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Terminal</title>
+    <title>System Authentication</title>
     <style>
-        body { margin: 0; background: #0a0a0f; color: #00ff41; font-family: 'Courier New', Courier, monospace; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            background: #050505; 
+            color: #00ff41; 
+            font-family: 'Courier New', Courier, monospace; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+        }
         
         /* Loading Screen */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: opacity 0.5s; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #1a1a2e; border-top: 5px solid #00ff41; border-radius: 50%; animation: spin 1s linear infinite; }
+        #loader { 
+            position: fixed; inset: 0; 
+            background: #050505; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            z-index: 100; transition: opacity 0.5s; 
+        }
+        .spinner { width: 40px; height: 40px; border: 3px solid #1a1a1a; border-top: 3px solid #00ff41; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Main Container */
-        .container { background: #16161e; padding: 2rem; border-radius: 10px; border: 1px solid #333; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 20px rgba(0, 255, 65, 0.1); display: none; }
-        .key-box { background: #000; padding: 15px; border: 1px solid #00ff41; border-radius: 5px; font-size: 1.1rem; margin: 20px 0; letter-spacing: 2px; }
-        button { background: transparent; color: #00ff41; border: 1px solid #00ff41; padding: 10px 25px; cursor: pointer; font-family: inherit; transition: 0.3s; }
-        button:hover { background: #00ff41; color: #000; box-shadow: 0 0 10px #00ff41; }
+        /* Container */
+        .container { 
+            background: #0d0d0d; 
+            padding: 2.5rem; 
+            border-radius: 8px; 
+            border: 1px solid #222; 
+            width: 90%; max-width: 420px; 
+            text-align: center; 
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.05); 
+        }
+        h2 { color: #fff; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
+        .key-box { 
+            background: #000; padding: 20px; 
+            border: 1px solid #00ff41; 
+            border-radius: 4px; font-size: 1.2rem; 
+            margin: 25px 0; color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+        }
+        button { 
+            background: #00ff41; color: #000; 
+            border: none; padding: 12px 30px; 
+            cursor: pointer; font-weight: bold; 
+            text-transform: uppercase; transition: 0.3s; 
+            width: 100%; border-radius: 4px;
+        }
+        button:hover { background: #fff; box-shadow: 0 0 15px #00ff41; }
         
-        /* Modal Thông báo */
-        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 50; }
-        .modal-content { background: #16161e; padding: 2rem; border: 1px solid #00ff41; border-radius: 10px; text-align: center; }
-        #toast { visibility: hidden; position: fixed; bottom: 30px; background: #00ff41; color: #000; padding: 15px; border-radius: 5px; font-weight: bold; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
+        /* Modal */
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 50; }
+        .modal-content { border: 1px solid #00ff41; padding: 2rem; width: 80%; max-width: 350px; text-align: center; }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div id="loader"><div class="spinner"></div><p>INITIALIZING SYSTEM...</p></div>
+<div id="loader"><div class="spinner"></div><p>SYNCING DATABASE...</p></div>
 
 <div id="modal">
     <div class="modal-content">
-        <h3>SYSTEM NOTICE</h3>
+        <h3 style="color:#00ff41">SYSTEM NOTICE</h3>
         <p>KEY SẼ THAY ĐỔI THEO TUẦN</p>
         <button onclick="closeModal()">Xác Nhận</button>
     </div>
 </div>
 
-<div class="container" id="mainContent">
-    <h2 style="color: #fff;">🔑 ACTIVE KEY</h2>
-    <div class="key-box" id="myKey">NKHOI-KEYBOT-2752011</div>
-    <button onclick="copyKey()">Sao chép Key</button>
+<div class="container hidden" id="mainContent">
+    <h2>Access Granted</h2>
+    <div class="key-box">NKHOI-KEYBOT-2752011</div>
+    <button onclick="copyAndRedirect()">Sao chép & Chuyển hướng</button>
 </div>
 
-<div id="toast">Vui lòng vào Discord nhập key!</div>
-
 <script>
-    // Xử lý loading
     window.onload = () => { setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 500); }, 1500); };
     
-    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('mainContent').classList.remove('hidden'); }
     
-    function copyKey() {
-        const key = document.getElementById("myKey").innerText;
+    function copyAndRedirect() {
+        const key = "NKHOI-KEYBOT-2752011";
         navigator.clipboard.writeText(key).then(() => {
-            const toast = document.getElementById("toast");
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            // Thay thế lịch sử duyệt web để người dùng không quay lại được
+            window.location.replace("https://discord.gg/PnR5cw8ksQ");
         });
     }
 </script>
