@@ -3,82 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Your Key</title>
+    <title>System Terminal</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1e1e2f, #2d2d44);
-            color: white;
-        }
-        .container {
-            background: #252538;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 90%;
-            max-width: 450px;
-            border: 1px solid #3e3e5e;
-        }
-        h2 { margin-bottom: 1.5rem; color: #4facfe; }
-        .key-box {
-            background: #1a1a2e;
-            padding: 20px;
-            border-radius: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 25px;
-            border: 1px solid #4facfe;
-            color: #00f2fe;
-            letter-spacing: 1px;
-        }
-        button {
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-            color: #1e1e2f;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
-        }
-        /* Style cho popup */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1;
-            bottom: 30px;
-            font-size: 17px;
-        }
-        #toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        body { margin: 0; background: #0a0a0f; color: #00ff41; font-family: 'Courier New', Courier, monospace; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        
+        /* Loading Screen */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: opacity 0.5s; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #1a1a2e; border-top: 5px solid #00ff41; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Main Container */
+        .container { background: #16161e; padding: 2rem; border-radius: 10px; border: 1px solid #333; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 20px rgba(0, 255, 65, 0.1); display: none; }
+        .key-box { background: #000; padding: 15px; border: 1px solid #00ff41; border-radius: 5px; font-size: 1.1rem; margin: 20px 0; letter-spacing: 2px; }
+        button { background: transparent; color: #00ff41; border: 1px solid #00ff41; padding: 10px 25px; cursor: pointer; font-family: inherit; transition: 0.3s; }
+        button:hover { background: #00ff41; color: #000; box-shadow: 0 0 10px #00ff41; }
+        
+        /* Modal Thông báo */
+        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 50; }
+        .modal-content { background: #16161e; padding: 2rem; border: 1px solid #00ff41; border-radius: 10px; text-align: center; }
+        #toast { visibility: hidden; position: fixed; bottom: 30px; background: #00ff41; color: #000; padding: 15px; border-radius: 5px; font-weight: bold; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🔑 Active Key</h2>
+<div id="loader"><div class="spinner"></div><p>INITIALIZING SYSTEM...</p></div>
+
+<div id="modal">
+    <div class="modal-content">
+        <h3>SYSTEM NOTICE</h3>
+        <p>KEY SẼ THAY ĐỔI THEO TUẦN</p>
+        <button onclick="closeModal()">Xác Nhận</button>
+    </div>
+</div>
+
+<div class="container" id="mainContent">
+    <h2 style="color: #fff;">🔑 ACTIVE KEY</h2>
     <div class="key-box" id="myKey">NKHOI-KEYBOT-2752011</div>
     <button onclick="copyKey()">Sao chép Key</button>
 </div>
@@ -86,6 +48,11 @@
 <div id="toast">Vui lòng vào Discord nhập key!</div>
 
 <script>
+    // Xử lý loading
+    window.onload = () => { setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 500); }, 1500); };
+    
+    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; }
+    
     function copyKey() {
         const key = document.getElementById("myKey").innerText;
         navigator.clipboard.writeText(key).then(() => {
