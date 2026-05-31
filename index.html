@@ -1,99 +1,390 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Authentication</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            margin: 0; 
-            background: #050505; 
-            color: #00ff41; 
-            font-family: 'Courier New', Courier, monospace; 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-        }
-        
-        /* Loading Screen */
-        #loader { 
-            position: fixed; inset: 0; 
-            background: #050505; 
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            z-index: 100; transition: opacity 0.5s; 
-        }
-        .spinner { width: 40px; height: 40px; border: 3px solid #1a1a1a; border-top: 3px solid #00ff41; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Container */
-        .container { 
-            background: #0d0d0d; 
-            padding: 2.5rem; 
-            border-radius: 8px; 
-            border: 1px solid #222; 
-            width: 90%; max-width: 420px; 
-            text-align: center; 
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.05); 
-        }
-        h2 { color: #fff; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
-        .key-box { 
-            background: #000; padding: 20px; 
-            border: 1px solid #00ff41; 
-            border-radius: 4px; font-size: 1.2rem; 
-            margin: 25px 0; color: #00ff41;
-            text-shadow: 0 0 8px #00ff41;
-        }
-        button { 
-            background: #00ff41; color: #000; 
-            border: none; padding: 12px 30px; 
-            cursor: pointer; font-weight: bold; 
-            text-transform: uppercase; transition: 0.3s; 
-            width: 100%; border-radius: 4px;
-        }
-        button:hover { background: #fff; box-shadow: 0 0 15px #00ff41; }
-        
-        /* Modal */
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 50; }
-        .modal-content { border: 1px solid #00ff41; padding: 2rem; width: 80%; max-width: 350px; text-align: center; }
-        
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNX08 SHOP</title>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+html{
+scroll-behavior:smooth;
+}
+body{
+background:#050816;
+color:white;
+overflow-x:hidden;
+}
+/* NỀN ANIMATION */
+body::before{
+content:'';
+position:fixed;
+width:200%;
+height:200%;
+top:-50%;
+left:-50%;
+background:
+radial-gradient(circle,#00d9ff22 1px,transparent 1px),
+radial-gradient(circle,#ff00cc22 1px,transparent 1px);
+background-size:60px 60px;
+animation:bgmove 20s linear infinite;
+z-index:-2;
+}
+@keyframes bgmove{
+0%{
+transform:rotate(0deg);
+}
+100%{
+transform:rotate(360deg);
+}
+}
+body::after{
+content:'';
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top left,#00d9ff22,transparent 40%),
+radial-gradient(circle at bottom right,#ff00cc22,transparent 40%);
+z-index:-1;
+}
+/* HEADER */
+.header{
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.logo{
+font-size:35px;
+font-weight:700;
+letter-spacing:3px;
+background:linear-gradient(90deg,#00d9ff,#ff00cc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+.discord{
+width:60px;
+height:60px;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#5865F2;
+text-decoration:none;
+font-size:30px;
+box-shadow:0 0 20px #5865F2;
+transition:.5s;
+}
+.discord:hover{
+transform:rotate(360deg) scale(1.1);
+}
+/* BANNER */
+.hero{
+max-width:1200px;
+margin:auto;
+padding:20px;
+position:relative;
+}
+.hero img{
+width:100%;
+border-radius:30px;
+border:2px solid #00d9ff;
+box-shadow:0 0 40px rgba(0,217,255,.4);
+animation:zoom 8s ease-in-out infinite;
+}
+@keyframes zoom{
+50%{
+transform:scale(1.03);
+}
+}
+.overlay{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+width:100%;
+padding:20px;
+}
+.overlay h1{
+font-size:70px;
+text-shadow:0 0 20px #00d9ff;
+}
+.overlay p{
+font-size:22px;
+margin-top:10px;
+line-height:1.7;
+}
+/* BUTTON */
+.main-btn{
+display:inline-block;
+margin-top:20px;
+padding:16px 40px;
+border-radius:20px;
+text-decoration:none;
+font-size:22px;
+font-weight:bold;
+color:white;
+background:linear-gradient(
+90deg,
+#00d9ff,
+#5865F2,
+#ff00cc
+);
+background-size:300%;
+animation:gradient 5s linear infinite;
+box-shadow:0 0 25px #00d9ff;
+}
+@keyframes gradient{
+0%{
+background-position:0%;
+}
+100%{
+background-position:300%;
+}
+}
+/* STATS */
+.stats{
+max-width:1200px;
+margin:20px auto;
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+}
+.stat{
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(15px);
+padding:15px 25px;
+border-radius:20px;
+border:1px solid rgba(255,255,255,.1);
+}
+/* TITLE */
+.title{
+text-align:center;
+font-size:50px;
+font-weight:700;
+margin:50px 0;
+background:linear-gradient(90deg,#00d9ff,#ff00cc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+/* CARDS */
+.grid{
+max-width:1300px;
+margin:auto;
+padding:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:25px;
+}
+.card{
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.1);
+border-radius:30px;
+overflow:hidden;
+transition:.5s;
+position:relative;
+}
+.card:hover{
+transform:translateY(-12px);
+box-shadow:
+0 0 20px #00d9ff,
+0 0 40px #00d9ff44;
+}
+.tag{
+position:absolute;
+top:15px;
+right:15px;
+background:#ff3d71;
+padding:8px 15px;
+border-radius:15px;
+font-weight:bold;
+}
+.card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+.content{
+padding:25px;
+}
+.day{
+font-size:30px;
+font-weight:700;
+}
+.price{
+font-size:42px;
+font-weight:700;
+color:#FFD700;
+margin:15px 0;
+text-shadow:0 0 15px #FFD70055;
+}
+.buy{
+display:block;
+text-align:center;
+padding:15px;
+border-radius:15px;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+color:white;
+background:linear-gradient(
+90deg,
+#00d9ff,
+#5865F2,
+#ff00cc
+);
+background-size:300%;
+animation:gradient 5s linear infinite;
+}
+/* FOOTER */
+.footer{
+margin-top:70px;
+padding:40px;
+text-align:center;
+background:#030612;
+}
+.footer h2{
+margin-bottom:15px;
+}
+.footer p{
+opacity:.8;
+line-height:1.8;
+}
+/* MOBILE */
+@media(max-width:768px){
+.overlay h1{
+font-size:40px;
+}
+.overlay p{
+font-size:16px;
+}
+.title{
+font-size:32px;
+}
+.price{
+font-size:34px;
+}
+}
+</style>
 </head>
 <body>
-
-<div id="loader"><div class="spinner"></div><p>SYNCING DATABASE...</p></div>
-
-<div id="modal">
-    <div class="modal-content">
-        <h3 style="color:#00ff41">SYSTEM NOTICE</h3>
-        <p>KEY SẼ THAY ĐỔI THEO TUẦN</p>
-        <button onclick="closeModal()">Xác Nhận</button>
-    </div>
+<div class="header">
+<div class="logo">
+TNX08 SHOP
 </div>
 
-<div class="container hidden" id="mainContent">
-    <h2>Access Granted</h2>
-    <div class="key-box">NKHOI-KEYBOT-2752011</div>
-    <button onclick="copyAndRedirect()">Sao chép & Chuyển hướng</button>
+🎮
 </div>
+<div class="hero">
+<img src="anh.jpg">
+<div class="overlay">
+<h1>TNX08 SHOP</h1>
+<p>
+⚡ Chất lượng cao<br>
+🛡️ Hỗ trợ nhanh chóng<br>
+🔥 Kích hoạt tự động
+</p>
 
+MUA NGAY
+</div>
+</div>
+<div class="stats">
+<div class="stat">
+👥 Online:
+<span id="online">128</span>
+</div>
+<div class="stat">
+🕒
+<span id="clock"></span>
+</div>
+</div>
+<div class="title">
+BẢNG GIÁ TÀI KHOẢN VIP
+</div>
+<div class="grid">
+<div class="card">
+<span class="tag">HOT</span>
+<img src="anh.jpg">
+<div class="content">
+<div class="day">1 Ngày</div>
+<div class="price">20.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<img src="anh.jpg">
+<div class="content">
+<div class="day">3 Ngày</div>
+<div class="price">40.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<img src="anh.jpg">
+<div class="content">
+<div class="day">7 Ngày</div>
+<div class="price">60.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<img src="anh.jpg">
+<div class="content">
+<div class="day">20 Ngày</div>
+<div class="price">100.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<img src="anh.jpg">
+<div class="content">
+<div class="day">30 Ngày</div>
+<div class="price">150.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<img src="anh.jpg">
+<div class="content">
+<div class="day">90 Ngày</div>
+<div class="price">250.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+<div class="card">
+<span class="tag">VIP</span>
+<img src="anh.jpg">
+<div class="content">
+<div class="day">Vĩnh Viễn</div>
+<div class="price">600.000đ</div>
+<a class="buy" href="https://zalo.me/84989288257">MUA NGAY</a>
+</div>
+</div>
+</div>
+<div class="footer">
+<h2>TNX08 SHOP</h2>
+<p>
+⚡ Nhanh chóng<br>
+🛡️ Hỗ trợ 24/7<br>
+🔥 Chất lượng cao
+</p>
+</div>
 <script>
-    window.onload = () => { setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 500); }, 1500); };
-    
-    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('mainContent').classList.remove('hidden'); }
-    
-    function copyAndRedirect() {
-        const key = "NKHOI-KEYBOT-2752011";
-        navigator.clipboard.writeText(key).then(() => {
-            // Thay thế lịch sử duyệt web để người dùng không quay lại được
-            window.location.replace("https://discord.gg/PnR5cw8ksQ");
-        });
-    }
+function updateClock(){
+document.getElementById("clock").innerHTML =
+new Date().toLocaleTimeString("vi-VN");
+document.getElementById("online").innerHTML =
+Math.floor(Math.random()*30)+120;
+}
+setInterval(updateClock,1000);
+updateClock();
 </script>
-
 </body>
-</html>
+</html
